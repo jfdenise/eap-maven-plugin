@@ -66,6 +66,13 @@
             <groupId>org.jboss</groupId>
             <artifactId>staxmapper</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <!-- Only used at compile-time -->
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

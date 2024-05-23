@@ -26,6 +26,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.jboss.galleon.ProvisioningException;
@@ -33,13 +34,16 @@ import org.jboss.galleon.api.GalleonBuilder;
 import org.jboss.galleon.api.GalleonFeaturePack;
 import org.jboss.galleon.api.Provisioning;
 import org.jboss.galleon.api.config.GalleonProvisioningConfig;
+import org.jboss.galleon.maven.plugin.util.MvnMessageWriter;
 import org.jboss.galleon.universe.maven.repo.MavenRepoManager;
 import org.wildfly.glow.Arguments;
 import org.wildfly.glow.GlowSession;
 import org.wildfly.glow.ScanResults;
 import org.wildfly.plugin.common.GlowMavenMessageWriter;
+import org.wildfly.plugin.common.PropertyNames;
 import org.wildfly.plugin.provision.ChannelMavenArtifactRepositoryManager;
 import org.wildfly.plugin.tools.GalleonUtils;
+import org.wildfly.plugin.tools.bootablejar.BootableJarSupport;
 
 /**
  * Package an EAP server.
@@ -49,8 +53,38 @@ import org.wildfly.plugin.tools.GalleonUtils;
 @Mojo(name = "package", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, defaultPhase = LifecyclePhase.PACKAGE)
 public class PackageServerMojo extends org.wildfly.plugin.provision.AbstractPackageServerMojo {
 
+    public static final String JAR = "jar";
+    public static final String BOOTABLE_JAR_NAME_RADICAL = "server-";
+
     @Parameter(alias = "discover-provisioning-info")
     private GlowConfig discoverProvisioningInfo;
+    /**
+     * Package the provisioned server into a WildFly Bootable JAR.
+     * <p>
+     * Note that the produced fat JAR is ignored when running the
+     * {@code dev},{@code image},{@code start} or {@code run} goals.
+     * </p>
+     */
+    @Parameter(alias = "bootable-jar", required = false, property = PropertyNames.BOOTABLE_JAR)
+    private boolean bootableJar;
+
+    /**
+     * When {@code bootable-jar} is set to true, use this parameter to name the
+     * generated jar file. The jar file is named by default
+     * {@code server-bootable.jar}.
+     */
+    @Parameter(alias = "bootable-jar-name", required = false, property = PropertyNames.BOOTABLE_JAR_NAME)
+    private String bootableJarName;
+
+    /**
+     * When {@code bootable-jar} is set to true, the bootable JAR artifact is
+     * attached to the project with the classifier 'bootable'. Use this
+     * parameter to configure the classifier.
+     */
+    @Parameter(alias = "bootable-jar-install-artifact-classifier", property = PropertyNames.BOOTABLE_JAR_INSTALL_CLASSIFIER, defaultValue = BootableJarSupport.BOOTABLE_SUFFIX)
+    private String bootableJarInstallArtifactClassifier;
+
+    private GalleonProvisioningConfig config;
 
     @Override
     protected void enrichRepositories() throws MojoExecutionException {
@@ -61,7 +95,8 @@ public class PackageServerMojo extends org.wildfly.plugin.provision.AbstractPack
     protected GalleonProvisioningConfig buildGalleonConfig(GalleonBuilder pm)
             throws MojoExecutionException, ProvisioningException {
         if (discoverProvisioningInfo == null) {
-            return super.buildGalleonConfig(pm);
+            config = super.buildGalleonConfig(pm);
+            return config;
         }
         try {
             try (ScanResults results = scanDeployment(discoverProvisioningInfo,
@@ -76,11 +111,48 @@ public class PackageServerMojo extends org.wildfly.plugin.provision.AbstractPack
                     pm,
                     galleonOptions,
                     layersConfigurationFileName)) {
-                return results.getProvisioningConfig();
+                config = results.getProvisioningConfig();
+                return config;
             }
         } catch (Exception ex) {
             throw new MojoExecutionException(ex.getLocalizedMessage(), ex);
         }
+    }
+
+    @Override
+    protected void serverProvisioned(Path jbossHome) throws MojoExecutionException, MojoFailureException {
+        super.serverProvisioned(jbossHome);
+        try {
+            if (bootableJar) {
+                packageBootableJar(jbossHome, config);
+            }
+        } catch (Exception ex) {
+            throw new MojoExecutionException(ex.getLocalizedMessage(), ex);
+        }
+    }
+
+    private void packageBootableJar(Path jbossHome, GalleonProvisioningConfig activeConfig) throws Exception {
+        getLog().info("Building Bootable JAR...");
+        String jarName = bootableJarName == null ? BOOTABLE_JAR_NAME_RADICAL + BootableJarSupport.BOOTABLE_SUFFIX + "." + JAR
+                : bootableJarName;
+        Path targetPath = Paths.get(project.getBuild().getDirectory());
+        Path targetJarFile = targetPath.toAbsolutePath()
+                .resolve(jarName);
+        Files.deleteIfExists(targetJarFile);
+        BootableJarSupport.packageBootableJar(targetJarFile, targetPath,
+                activeConfig, jbossHome,
+                artifactResolver,
+                new MvnMessageWriter(getLog()));
+        attachJar(targetJarFile);
+        getLog().info("Bootable JAR packaging DONE. To run the server: java -jar " + targetJarFile);
+    }
+
+    private void attachJar(Path jarFile) {
+        if (getLog().isDebugEnabled()) {
+            getLog().debug("Attaching bootable jar " + jarFile + " as a project artifact with classifier "
+                    + bootableJarInstallArtifactClassifier);
+        }
+        projectHelper.attachArtifact(project, JAR, bootableJarInstallArtifactClassifier, jarFile.toFile());
     }
 
     public static ScanResults scanDeployment(GlowConfig discoverProvisioningInfo,

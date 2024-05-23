@@ -34,13 +34,13 @@ import org.jboss.galleon.api.GalleonBuilder;
 import org.jboss.galleon.api.GalleonFeaturePack;
 import org.jboss.galleon.api.Provisioning;
 import org.jboss.galleon.api.config.GalleonProvisioningConfig;
-import org.jboss.galleon.maven.plugin.util.MvnMessageWriter;
 import org.jboss.galleon.universe.maven.repo.MavenRepoManager;
 import org.wildfly.glow.Arguments;
 import org.wildfly.glow.GlowSession;
 import org.wildfly.glow.ScanResults;
 import org.wildfly.plugin.common.GlowMavenMessageWriter;
 import org.wildfly.plugin.common.PropertyNames;
+import org.wildfly.plugin.common.Utils;
 import org.wildfly.plugin.provision.ChannelMavenArtifactRepositoryManager;
 import org.wildfly.plugin.tools.GalleonUtils;
 import org.wildfly.plugin.tools.bootablejar.BootableJarSupport;
@@ -124,35 +124,18 @@ public class PackageServerMojo extends org.wildfly.plugin.provision.AbstractPack
         super.serverProvisioned(jbossHome);
         try {
             if (bootableJar) {
-                packageBootableJar(jbossHome, config);
+                Utils.packageBootableJar(jbossHome,
+                        config,
+                        getLog(),
+                        artifactResolver,
+                        project,
+                        projectHelper,
+                        bootableJarInstallArtifactClassifier,
+                        bootableJarName);
             }
         } catch (Exception ex) {
             throw new MojoExecutionException(ex.getLocalizedMessage(), ex);
         }
-    }
-
-    private void packageBootableJar(Path jbossHome, GalleonProvisioningConfig activeConfig) throws Exception {
-        getLog().info("Building Bootable JAR...");
-        String jarName = bootableJarName == null ? BOOTABLE_JAR_NAME_RADICAL + BootableJarSupport.BOOTABLE_SUFFIX + "." + JAR
-                : bootableJarName;
-        Path targetPath = Paths.get(project.getBuild().getDirectory());
-        Path targetJarFile = targetPath.toAbsolutePath()
-                .resolve(jarName);
-        Files.deleteIfExists(targetJarFile);
-        BootableJarSupport.packageBootableJar(targetJarFile, targetPath,
-                activeConfig, jbossHome,
-                artifactResolver,
-                new MvnMessageWriter(getLog()));
-        attachJar(targetJarFile);
-        getLog().info("Bootable JAR packaging DONE. To run the server: java -jar " + targetJarFile);
-    }
-
-    private void attachJar(Path jarFile) {
-        if (getLog().isDebugEnabled()) {
-            getLog().debug("Attaching bootable jar " + jarFile + " as a project artifact with classifier "
-                    + bootableJarInstallArtifactClassifier);
-        }
-        projectHelper.attachArtifact(project, JAR, bootableJarInstallArtifactClassifier, jarFile.toFile());
     }
 
     public static ScanResults scanDeployment(GlowConfig discoverProvisioningInfo,

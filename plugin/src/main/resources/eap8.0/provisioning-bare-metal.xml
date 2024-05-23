@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+
+<installation xmlns="urn:jboss:galleon:provisioning:3.0">
+    <feature-pack location="org.jboss.eap:wildfly-ee-galleon-pack:"/>
+    <feature-pack location="org.jboss.eap:eap-datasources-galleon-pack:"/>
+    <feature-pack location="org.keycloak:keycloak-saml-adapter-galleon-pack:"/>
+    <feature-pack location="org.jboss.eap:eap-myfaces-feature-pack:"/>
+</installation>

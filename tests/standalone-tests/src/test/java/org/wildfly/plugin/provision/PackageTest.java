@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.wildfly.plugin.tests.AbstractProvisionConfiguredMojoTestCase;
 import org.wildfly.plugin.tests.AbstractWildFlyMojoTest;
@@ -52,7 +51,6 @@ public class PackageTest extends AbstractProvisionConfiguredMojoTestCase {
     }
 
     @Test
-    @Ignore
     public void testPackageWithChannelGlow() throws Exception {
 
         final Mojo packageMojo = lookupConfiguredMojo(
@@ -91,24 +89,23 @@ public class PackageTest extends AbstractProvisionConfiguredMojoTestCase {
     }
 
     @Test
-    @Ignore
     public void testGlowPackage() throws Exception {
 
         final Mojo packageMojo = lookupConfiguredMojo(
                 AbstractWildFlyMojoTest.getPomFile("package-glow-pom.xml").toFile(), "package");
-        String[] layers = { "ee-core-profile-server", "microprofile-openapi" };
+        String[] layers = { "ee-core-profile-server", "core-tools" };
         packageMojo.execute();
         Path jbossHome = AbstractWildFlyMojoTest.getBaseDir().resolve("target").resolve("packaged-glow-server");
         checkStandaloneWildFlyHome(jbossHome, 1, layers, null, true);
     }
 
     @Test
-    @Ignore
     public void testGlowNoDeploymentPackage() throws Exception {
 
         final Mojo packageMojo = lookupConfiguredMojo(
                 AbstractWildFlyMojoTest.getPomFile("package-glow-no-deployment-pom.xml").toFile(), "package");
-        String[] layers = { "ee-core-profile-server", "microprofile-openapi" };
+        System.setProperty("org.jboss.eap.datasources.postgresql.driver.version", "42.7.4");
+        String[] layers = { "ee-core-profile-server", "postgresql-datasource" };
         packageMojo.execute();
         Path jbossHome = AbstractWildFlyMojoTest.getBaseDir().resolve("target").resolve("packaged-glow-no-deployment-server");
         checkStandaloneWildFlyHome(jbossHome, 0, layers, null, true);

@@ -9,7 +9,6 @@ import java.nio.file.Path;
 
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.wildfly.plugin.tests.AbstractProvisionConfiguredMojoTestCase;
 import org.wildfly.plugin.tests.AbstractWildFlyMojoTest;
@@ -53,12 +52,11 @@ public class PackageBootableTest extends AbstractProvisionConfiguredMojoTestCase
     }
 
     @Test
-    @Ignore
     public void testGlowPackage() throws Exception {
 
         final Mojo packageMojo = lookupConfiguredMojo(
                 AbstractWildFlyMojoTest.getPomFile("package-bootable-glow-pom.xml").toFile(), "package");
-        String[] layers = { "ee-core-profile-server", "microprofile-openapi" };
+        String[] layers = { "ee-core-profile-server", "core-tools" };
         packageMojo.execute();
         String deploymentName = "test.war";
         checkJar(AbstractWildFlyMojoTest.getBaseDir(), BOOTABLE_JAR_NAME, deploymentName,
@@ -66,7 +64,6 @@ public class PackageBootableTest extends AbstractProvisionConfiguredMojoTestCase
     }
 
     @Test
-    @Ignore
     public void testGlowCloudPackage() throws Exception {
 
         final Mojo packageMojo = lookupConfiguredMojo(

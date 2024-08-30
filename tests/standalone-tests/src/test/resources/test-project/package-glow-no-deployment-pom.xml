@@ -18,9 +18,16 @@
                 <configuration>
                     <record-provisioning-state>true</record-provisioning-state>
                     <provisioning-dir>packaged-glow-no-deployment-server</provisioning-dir>
+                    <channels>
+                        <channel>
+                            <manifest>
+                                <url>https://raw.githubusercontent.com/jfdenise/eap-maven-plugin/refs/heads/eap-glow/wip-manifests/wildfly-ee-34.0.0.Final-manifest.yaml</url>
+                            </manifest>
+                        </channel>
+                    </channels>
                     <discover-provisioning-info>
                         <addOns>
-                            <addOn>openapi</addOn>
+                            <addOn>postgresql</addOn>
                         </addOns>
                         <ignoreDeployment>true</ignoreDeployment>
                     </discover-provisioning-info>

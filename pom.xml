@@ -79,7 +79,7 @@
         <!-- This version property is also retrieved by plugin at runtime to resolve CLI artifact -->
         <version.org.wildfly.core>25.0.2.Final</version.org.wildfly.core>
         <version.org.wildfly>32.0.1.Final</version.org.wildfly>
-        <version.org.wildfly.channel>1.1.0.Final</version.org.wildfly.channel>
+        <version.org.wildfly.channel>1.2.1.Final</version.org.wildfly.channel>
         <version.org.wildfly.prospero>1.2.1.Final</version.org.wildfly.prospero>
         <!-- maven dependencies -->
         <version.javax.inject.javax.inject>1</version.javax.inject.javax.inject>
@@ -134,6 +134,10 @@
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
         <release.short.version>5.0</release.short.version>
         <docs.directory>${project.basedir}/../docs/releases/${release.short.version}</docs.directory>
+        
+        <!-- glow for EAP -->
+        <version.org.wildfly.glow>1.1.0.Final</version.org.wildfly.glow>
+        <version.org.jboss.eap.glow.metadata>1.0.0.Final-SNAPSHOT</version.org.jboss.eap.glow.metadata>
     </properties>
 
     <modules>
@@ -474,6 +478,16 @@
                 <groupId>org.jboss.slf4j</groupId>
                 <artifactId>slf4j-jboss-logging</artifactId>
                 <version>${version.org.jboss.logging.slf4j-jboss-logging}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.glow</groupId>
+                <artifactId>wildfly-glow-core</artifactId>
+                <version>${version.org.wildfly.glow}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.eap.glow.metadata</groupId>
+                <artifactId>jboss-eap-glow-metadata-api</artifactId>
+                <version>${version.org.jboss.eap.glow.metadata}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

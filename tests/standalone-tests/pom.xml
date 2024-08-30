@@ -92,6 +92,11 @@
             <groupId>org.jboss.slf4j</groupId>
             <artifactId>slf4j-jboss-logging</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wildfly.channel</groupId>
+            <artifactId>channel-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

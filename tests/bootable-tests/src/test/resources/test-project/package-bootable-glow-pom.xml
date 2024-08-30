@@ -16,6 +16,13 @@
                 <groupId>org.jboss.eap.plugins</groupId>
                 <artifactId>eap-maven-plugin</artifactId>
                 <configuration>
+                    <channels>
+                        <channel>
+                            <manifest>
+                                <url>https://raw.githubusercontent.com/jfdenise/eap-maven-plugin/refs/heads/eap-glow/wip-manifests/wildfly-ee-34.0.0.Final-manifest.yaml</url>
+                            </manifest>
+                        </channel>
+                    </channels>
                     <filename>test.war</filename>
                     <record-provisioning-state>true</record-provisioning-state>
                     <provisioning-dir>packaged-bootable-glow-server</provisioning-dir>
@@ -23,7 +30,7 @@
                     <bootable-jar-name>server-bootable.jar</bootable-jar-name>
                     <discover-provisioning-info>
                         <addOns>
-                            <addOn>openapi</addOn>
+                            <addOn>wildfly-cli</addOn>
                         </addOns>
                     </discover-provisioning-info>
                 </configuration>

@@ -19,11 +19,6 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-parent</artifactId>
-        <version>39</version>
-    </parent>
     <groupId>org.jboss.eap.plugins</groupId>
     <artifactId>eap-maven-plugin-parent</artifactId>
     <version>1.0.1.Final-redhat-SNAPSHOT</version>
@@ -46,7 +41,7 @@
                     
         <version.javax.inject.javax.inject>1</version.javax.inject.javax.inject>
         <version.junit>4.13.2</version.junit>
-        
+        <version.checkstyle.plugin>3.1.1</version.checkstyle.plugin>
         <version.org.apache.maven.maven-core>3.6.2</version.org.apache.maven.maven-core>
         <version.org.apache.maven.plugin-tools>3.7.0</version.org.apache.maven.plugin-tools>
         <version.org.apache.maven.resolver>1.9.10.redhat-00001</version.org.apache.maven.resolver>

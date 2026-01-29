@@ -110,7 +110,7 @@ public class PackageTest extends AbstractProjectMojoTest {
     @Test
     @InjectMojo(goal = "package", pom = "package-glow-pom.xml")
     public void testGlowPackage(final Mojo packageMojo) throws Exception {
-        String[] layers = { "ee-core-profile-server", "microprofile-openapi" };
+        String[] layers = { "ee-core-profile-server", "core-tools" };
         packageMojo.execute();
         Path jbossHome = resolvePath("packaged-glow-server");
         TestEnvironment.checkStandaloneWildFlyHome(jbossHome, 1, layers, null, true);
@@ -119,7 +119,7 @@ public class PackageTest extends AbstractProjectMojoTest {
     @Test
     @InjectMojo(goal = "package", pom = "package-glow-no-deployment-pom.xml")
     public void testGlowNoDeploymentPackage(final Mojo packageMojo) throws Exception {
-        String[] layers = { "ee-core-profile-server", "microprofile-openapi" };
+        String[] layers = { "ee-core-profile-server", "core-tools" };
         packageMojo.execute();
         Path jbossHome = resolvePath("packaged-glow-no-deployment-server");
         TestEnvironment.checkStandaloneWildFlyHome(jbossHome, 0, layers, null, true);
